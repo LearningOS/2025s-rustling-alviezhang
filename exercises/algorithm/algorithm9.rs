@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,20 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+
+        let mut pivot = self.count;
+        loop {
+            let parent = self.parent_idx(pivot);
+            if parent == 0 {
+                break;
+            }
+            if !(self.comparator)(&self.items[parent], &self.items[pivot]) {
+                self.items.swap(pivot, parent);
+            }
+            pivot = parent;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +69,18 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let mut pivot = idx;
+        // has left child
+        let left_idx = self.left_child_idx(idx);
+        if left_idx < self.count && !(self.comparator)(&self.items[pivot], &self.items[left_idx]) {
+            pivot = left_idx;
+        }
+        let right_idx = self.right_child_idx(idx);
+        if right_idx < self.count && !(self.comparator)(&self.items[pivot], &self.items[right_idx])
+        {
+            pivot = right_idx;
+        }
+        pivot
     }
 }
 
@@ -84,8 +106,23 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.len() == 0 {
+            return None;
+        }
+        self.items.swap(1, self.count);
+        let elem = self.items.pop();
+
+        let mut pivot = 1;
+        loop {
+            let smallest = self.smallest_child_idx(pivot);
+            if smallest == pivot {
+                break;
+            }
+            self.items.swap(smallest, pivot);
+            pivot = smallest;
+        }
+        self.count -= 1;
+        elem
     }
 }
 
